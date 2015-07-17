@@ -94,7 +94,7 @@ cp quiz.ini /etc/uwsgi/apps-enabled/
  service nginx restart
 service uwsgi restart
 
-apt-get purge uwsgi-plugin-pythond
+apt-get purge uwsgi-plugin-python
 apt-get install uwsgi-plugin-python3
 apt-get install python-dev
  git checkout no-rel
@@ -104,10 +104,20 @@ service nginx restart
 
 
 
-___________
+Viernes___________
 
 añadir en settings.py (DATABASES )
 		 'HOST': 'dninst.cqlcdgewnquc.us-west-2.rds.amazonaws.com',
+
+
+DATABASES = {
+    'default': {
+        'HOST': 'dninst.cqlcdgewnquc.us-west-2.rds.amazonaws.com',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'quiz',  # Or path to database file if using sqlite3.
+        'USER': 'root',  # Not used with sqlite3.
+        'PASSWORD': 'admin',
+    }
 
 source /var/apps/quiz/env/bin/activate
 python mange.py migrate
@@ -115,3 +125,49 @@ sudo apt-get purge mysql-server
 sudo apt-get purge --auto-remove
 sudo service uwsgi restart
  python manage.py loaddata data.json
+
+
+
+
+ sudo /var/apps/quiz/env/bin/pip install django-redis (en usuario ubuntu importante) 
+ sudo apt-get install redis-server
+ redis-cli ping  (Devuelve PONG?)
+ sudo service uwsgi restart && sudo service nginx restart
+
+
+sudo apt-get purge redis-server
+sudo apt-get install libmemcached-dev
+sudo  var/apps/quiz/env/bin/pip install pylibmc
+ sudo /var/apps/quiz/env/bin/pip install python-memcached
+pip freeze
+/var/apps/quiz/env/bin/pip install django-elasticache
+
+
+settings.py
+CACHES = {
+        "default": {
+                "BACKEND": "django_elasticache.namecached.ElastiCache",
+                "LOCATION": "namee.2atbqq.cfg.usw2.cache.amazonaws.com:11211$
+        }
+}
+
+
+Añadir bucket de cache
+CACHES = {
+        "default": {
+                "BACKEND": "django_elasticache.namecached.ElastiCache",
+                "LOCATION": "namee.2atbqq.cfg.usw2.cache.amazonaws.com:11211$
+        }
+}
+STATICFILES_DIRS = (PROJECT_ROOT + '/static', )
+
+MEDIA_ROOT = '/var/apps/quiz/media'
+#STATIC_ROOT = '/var/apps/quiz/static'
+STATICFILES_STORAGE = 'storages.bakcends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.botos3.S3Storage'
+
+AWS_ACCESS_KEY = ''
+AWS_SECRET_ACCES_KEY = ''
+AWS_STORAGE_BUCKET_NAME = ''
+
+apt-get install boto
